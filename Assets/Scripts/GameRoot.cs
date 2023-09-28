@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using DG.Tweening;
 using UniRx;
 using UnityEngine;
@@ -20,10 +19,11 @@ public class GameRoot : IDisposable
         _disposables = new CompositeDisposable();
         _ctx = ctx;
         
-        var mase = new Maze(_ctx.gameConfig.FieldSize, _ctx.gameConfig.StartPoint, _ctx.gameConfig.EndPoint).AddTo(_disposables);
-
+        var maze = new MazeGenerator(_ctx.gameConfig.FieldSize, _ctx.gameConfig.StartPoint, _ctx.gameConfig.EndPoint).AddTo(_disposables);
+        maze.Generate();
         
-        
+        var mazeSpawner = new MazeSpawner(_ctx.gameConfig.CellPrefab).AddTo(_disposables);
+        mazeSpawner.Spawn(maze.Maze);
         
         Fade();
     }

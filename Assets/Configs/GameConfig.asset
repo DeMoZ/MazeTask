@@ -15,3 +15,4 @@ MonoBehaviour:
   fieldSize: {x: 5, y: 6}
   startPoint: {x: 0, y: 0}
   endPoint: {x: 4, y: 5}
+  cellPrefab: {fileID: -7037014837268453913, guid: b612fd8b67e4247eaa7a3ef9173baedb, type: 3}
