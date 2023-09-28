@@ -8,6 +8,8 @@ public class GameContext : MonoBehaviour
 
     [SerializeField] private GameConfig gameConfig;
     [SerializeField] private CanvasGroup blocker;
+    [SerializeField] private SwipeDetector swipeDetector;
+    [SerializeField] private Transform mazeParent;
     
     private CompositeDisposable _disposables;
 
@@ -25,7 +27,7 @@ public class GameContext : MonoBehaviour
         }
 
         _disposables = new CompositeDisposable();
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
 
         Debug.Log($"[EntryRoot][time] Loading scene start.. {Time.realtimeSinceStartup}");
     }
@@ -50,6 +52,8 @@ public class GameContext : MonoBehaviour
         {
             gameConfig = gameConfig,
             blocker = blocker,
+            swipeDetector = swipeDetector,
+            mazeParent = mazeParent,
         }).AddTo(_disposables);
     }
 

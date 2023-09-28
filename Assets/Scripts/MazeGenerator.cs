@@ -29,7 +29,7 @@ public class MazeGenerator : IDisposable
     public MazeGenerator(Vector2Int size, Vector2Int start, Vector2Int end)
     {
         _size = size + Vector2Int.one;
-        
+
         _start = start;
         _end = end;
     }
@@ -96,10 +96,9 @@ public class MazeGenerator : IDisposable
             }
             else
             {
-                if(stack.Count > 0)
+                if (stack.Count > 0)
                     current = stack.Pop();
             }
-            
         } while (stack.Count > 0);
     }
 

@@ -6,12 +6,16 @@ public class GameConfig : ScriptableObject
     [SerializeField] private Vector2Int fieldSize = new(5, 6);
     [SerializeField] private Vector2Int startPoint = new(0, 0);
     [SerializeField] private Vector2Int endPoint = new(5, 6);
+    [SerializeField] private float ballSpeed = 0.3f;
     [SerializeField] private MazeCell cellPrefab;
+    [SerializeField] private GameObject playerPrefab;
 
     public Vector2Int FieldSize => fieldSize;
     public Vector2Int StartPoint => startPoint;
     public Vector2Int EndPoint => endPoint;
     public MazeCell CellPrefab => cellPrefab;
+    public GameObject PlayerPrefab => playerPrefab;
+    public float BallSpeed => ballSpeed;
 
     private void OnValidate()
     {
