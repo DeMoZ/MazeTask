@@ -35,10 +35,13 @@ public class MoveController : IDisposable
     {
         if (_isMoving) return;
 
+        var lenX = _maze.GetLength(0);
+        var lenY = _maze.GetLength(1);
+
         var nextX = _currentCell.x;
         var nextY = _currentCell.y;
         var steps = 0;
-        
+
         switch (direction)
         {
             case SwipeDetector.SwipeDirection.Left:
@@ -48,12 +51,16 @@ public class MoveController : IDisposable
                     {
                         nextX = x - 1;
                         steps++;
+
+                        // brake if fork
+                        if (nextY < lenY - 1 && !_maze[nextX, nextY + 1].wallBottom) break;
+                        if (!_maze[nextX, nextY].wallBottom) break;
                     }
-                    else
-                        break;
+                    else break;
                 }
+
                 break;
-            
+
             case SwipeDetector.SwipeDirection.Right:
                 for (var x = _currentCell.x; x < _maze.GetLength(0); x++)
                 {
@@ -61,23 +68,31 @@ public class MoveController : IDisposable
                     {
                         nextX = x + 1;
                         steps++;
+
+                        // brake if fork
+                        if (nextY < lenY - 1 && !_maze[nextX, nextY + 1].wallBottom) break;
+                        if (!_maze[nextX, nextY].wallBottom) break;
                     }
-                    else
-                        break;
+                    else break;
                 }
+
                 break;
-            
+
             case SwipeDetector.SwipeDirection.Up:
-                for (var y = _currentCell.y; y < _maze.GetLength(0) - 1; y++)
+                for (var y = _currentCell.y; y < lenX - 1; y++)
                 {
                     if (!_maze[nextX, y + 1].wallBottom)
                     {
                         nextY = y + 1;
                         steps++;
+
+                        // brake if fork
+                        if (nextX < lenX - 1 && !_maze[nextX + 1, nextY].wallLeft) break;
+                        if (!_maze[nextX, nextY].wallLeft) break;
                     }
-                    else
-                        break;
+                    else break;
                 }
+
                 break;
             case SwipeDetector.SwipeDirection.Down:
                 for (var y = _currentCell.y; y > 0; y--)
@@ -86,15 +101,19 @@ public class MoveController : IDisposable
                     {
                         nextY = y - 1;
                         steps++;
+
+                        // brake if fork
+                        if (nextX < lenX - 1 && !_maze[nextX + 1, nextY].wallLeft) break;
+                        if (!_maze[nextX, nextY].wallLeft) break;
                     }
-                    else
-                        break;
+                    else break;
                 }
+
                 break;
         }
 
         if (steps == 0) return;
-        
+
         _isMoving = true;
 
         var toPos = _mazeSpawner.GetInCellCoordinates(nextX, nextY);
@@ -102,7 +121,7 @@ public class MoveController : IDisposable
         // Debug.Log($"------------");
         // Debug.Log($"curXY[{_currentCell}], coord from { _mazeSpawner.GetInCellCoordinates(_currentCell)};");
         // Debug.Log($"nextXY[{nextX};{nextY}], coord to {toPos};");
-        
+
         _player.transform.DOMove(toPos, steps * _speed).SetEase(Ease.InCubic)
             .OnComplete(() =>
             {
