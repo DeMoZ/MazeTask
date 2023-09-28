@@ -17,36 +17,49 @@ public class GameRoot : IDisposable
 
     private readonly Ctx _ctx;
     private CompositeDisposable _disposables;
+    private MazeGenerator _maze;
+    private PlayerController _playerController;
+    private MazeSpawner _mazeSpawner;
 
     public GameRoot(Ctx ctx)
     {
         _disposables = new CompositeDisposable();
         _ctx = ctx;
 
-        var maze = new MazeGenerator(_ctx.gameConfig.FieldSize, _ctx.gameConfig.StartPoint, _ctx.gameConfig.EndPoint)
+        var onReachEnd = new ReactiveCommand().AddTo(_disposables);
+        _maze = new MazeGenerator(_ctx.gameConfig.FieldSize, _ctx.gameConfig.StartPoint, _ctx.gameConfig.EndPoint)
             .AddTo(_disposables);
-        maze.Generate();
+        _mazeSpawner = new MazeSpawner(_ctx.gameConfig.CellPrefab, _ctx.mazeParent).AddTo(_disposables);
+        _playerController = new PlayerController(_ctx.swipeDetector, _mazeSpawner, _ctx.gameConfig,
+            onReachEnd).AddTo(_disposables);
 
-        var mazeSpawner = new MazeSpawner(_ctx.gameConfig.CellPrefab, _ctx.mazeParent).AddTo(_disposables);
-        mazeSpawner.Spawn(maze.Maze);
-
-        var playerPosition = mazeSpawner.GetInCellCoordinates(_ctx.gameConfig.StartPoint);
-        var player = Object.Instantiate(_ctx.gameConfig.PlayerPrefab, playerPosition,
-            quaternion.identity);
-
-        var moveController = new MoveController(player, _ctx.swipeDetector, maze.Maze, mazeSpawner,
-            _ctx.gameConfig.StartPoint, _ctx.gameConfig.BallSpeed);
-
-        Fade(false);
+        onReachEnd.Subscribe(_ => OnReachEnd()).AddTo(_disposables);
+        CreateObjects();
     }
 
-    private void Fade(bool showBlocker)
+    private void CreateObjects()
     {
-        var endValue = showBlocker ? 1 : 0;
-        _ctx.blocker.DOFade(endValue, 0.3f);
+        _maze.Generate();
+        _mazeSpawner.Spawn(_maze.Maze);
+        _playerController.Set(_maze.Maze);
+        
+        _ctx.blocker.DOFade(0, 0.3f);
     }
 
-
+    private void OnReachEnd()
+    {
+        // some win logic
+        Restart();
+    }
+    
+    private void Restart()
+    {
+        _ctx.blocker.DOFade(1, 0.3f).OnComplete(() =>
+        {
+            CreateObjects();
+        });
+    }
+    
     public void Dispose()
     {
         _disposables.Dispose();

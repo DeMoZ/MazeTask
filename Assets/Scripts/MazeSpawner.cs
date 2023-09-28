@@ -24,6 +24,9 @@ public class MazeSpawner : IDisposable
 
     public void Spawn(Cell[,] maze)
     {
+        foreach (Transform child in _mazeParent) 
+            Object.Destroy(child.gameObject);
+        
         var xLenght = maze.GetLength(0);
         var yLenght = maze.GetLength(1);
 
@@ -62,6 +65,6 @@ public class MazeSpawner : IDisposable
 
     public void Dispose()
     {
-        // TODO release managed resources here
+       
     }
 }
