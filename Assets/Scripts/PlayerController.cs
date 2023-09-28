@@ -3,6 +3,7 @@ using DG.Tweening;
 using UniRx;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 public class PlayerController : IDisposable
 {
@@ -15,6 +16,7 @@ public class PlayerController : IDisposable
     private GameObject _player;
     private Vector2Int _currentCell;
     private bool _isMoving;
+    private Sequence _seqience;
 
     public PlayerController(SwipeDetector swipeDetector, MazeSpawner mazeSpawner,
         GameConfig gameConfig, ReactiveCommand onReachEnd)
@@ -135,15 +137,22 @@ public class PlayerController : IDisposable
         // Debug.Log($"------------");
         // Debug.Log($"curXY[{_currentCell}], coord from { _mazeSpawner.GetInCellCoordinates(_currentCell)};");
         // Debug.Log($"nextXY[{nextX};{nextY}], coord to {toPos};");
+        _seqience.Kill();
+        _seqience = DOTween.Sequence();
+        _seqience.SetEase(Ease.InCubic);
+        _seqience.OnComplete(() =>
+        {
+            _isMoving = false;
+            _currentCell.x = nextX;
+            _currentCell.y = nextY;
+            if (isExit) _onReachEnd?.Execute();
+        });
+        
+        _seqience.Append(_player.transform.DOMove(toPos, steps * _gameConfig.BallSpeed));
 
-        _player.transform.DOMove(toPos, steps * _gameConfig.BallSpeed).SetEase(Ease.InCubic)
-            .OnComplete(() =>
-            {
-                _isMoving = false;
-                _currentCell.x = nextX;
-                _currentCell.y = nextY;
-                if (isExit) _onReachEnd?.Execute();
-            });
+        var sign = Mathf.Sign(Random.Range(0, 2) - 1);
+        var newRotation = _player.transform.rotation * Quaternion.Euler(0, 0, 150 * steps / 2 * sign);
+        _seqience.Join(_player.transform.DORotateQuaternion(newRotation, steps * _gameConfig.BallSpeed));
     }
 
     private bool IsEnd(ref bool exit, int x, int y)
