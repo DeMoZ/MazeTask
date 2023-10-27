@@ -13,10 +13,10 @@ public class MazeSpawner : IDisposable
     private int _xMazeOffset;
     private int _yMazeOffset;
 
-    public MazeSpawner(MazeCell cellPrefab, Transform mazeParent)
+    public MazeSpawner(GameContext ctx)
     {
-        _cellPrefab = cellPrefab;
-        _mazeParent = mazeParent;
+        _cellPrefab = ctx.GameConfig.CellPrefab;
+        _mazeParent = ctx.MazeParent;
 
         _xCellOffset = _cellPrefab.size.x;
         _yCellOffset = _cellPrefab.size.y;

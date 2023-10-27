@@ -16,7 +16,7 @@ public class SwipeDetector : MonoBehaviour
     private Vector2 _startTouch;
     private Vector2 _endTouch;
 
-    public Action<SwipeDirection> OnSwipe;
+    public event Action<SwipeDirection> OnSwipe;
 
     private void Update()
     {

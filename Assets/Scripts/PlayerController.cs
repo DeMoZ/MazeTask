@@ -18,13 +18,12 @@ public class PlayerController : IDisposable
     private bool _isMoving;
     private Sequence _seqience;
 
-    public PlayerController(SwipeDetector swipeDetector, MazeSpawner mazeSpawner,
-        GameConfig gameConfig, ReactiveCommand onReachEnd)
+    public PlayerController(SwipeDetector swipeDetector, MazeSpawner mazeSpawner, GameContext gc, GameService gs)
     {
         _swipeDetector = swipeDetector;
         _mazeSpawner = mazeSpawner;
-        _gameConfig = gameConfig;
-        _onReachEnd = onReachEnd;
+        _gameConfig = gc.GameConfig;
+        _onReachEnd = gs.OnReachEnd;
 
         _swipeDetector.OnSwipe += OnSwipe;
     }
