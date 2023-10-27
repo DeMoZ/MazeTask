@@ -1,7 +1,6 @@
 using System;
 using DG.Tweening;
 using UniRx;
-using UnityEngine;
 
 public class GameRoot : IDisposable
 {
@@ -9,13 +8,12 @@ public class GameRoot : IDisposable
     private MazeGenerator _maze;
     private PlayerController _playerController;
     private MazeSpawner _mazeSpawner;
-    private readonly GameContext _gc;
+    private readonly GameContext _ctx;
 
 
-    public GameRoot(GameService gs, GameContext gc, MazeGenerator maze, MazeSpawner mazeSpawner, PlayerController playerController)
+    public GameRoot(GameService gs, GameContext ctx, MazeGenerator maze, MazeSpawner mazeSpawner, PlayerController playerController)
     {
-        Debug.Log($"{this} created");
-        _gc = gc;
+        _ctx = ctx;
         _maze = maze;
         _mazeSpawner = mazeSpawner;
         _playerController = playerController;
@@ -31,7 +29,7 @@ public class GameRoot : IDisposable
         _mazeSpawner.Spawn(_maze.Maze);
         _playerController.Set(_maze.Maze);
 
-        // _ctx.Blocker.DOFade(0, 0.3f);
+        _ctx.Blocker.DOFade(0, 0.3f);
     }
 
     private void OnReachEnd()
@@ -41,7 +39,7 @@ public class GameRoot : IDisposable
 
     private void Restart()
     {
-        _gc.Blocker.DOFade(1, 0.3f).OnComplete(() => { CreateObjects(); });
+        _ctx.Blocker.DOFade(1, 0.3f).OnComplete(CreateObjects);
     }
 
     public void Dispose()

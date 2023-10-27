@@ -26,14 +26,11 @@ public class MazeGenerator : IDisposable
     private Cell[,] _maze;
     public Cell[,] Maze => _maze;
 
-    public MazeGenerator(GameContext gc)
-    //public MazeGenerator(GameConfig gameConfig)
-    //public MazeGenerator(Vector2Int size, Vector2Int start, Vector2Int end)
+    public MazeGenerator(GameConfig gc)
     {
-        _size = gc.GameConfig.FieldSize + Vector2Int.one;
-
-        _start = gc.GameConfig.StartPoint;
-        _end = gc.GameConfig.EndPoint;
+        _size = gc.FieldSize + Vector2Int.one;
+        _start = gc.StartPoint;
+        _end = gc.EndPoint;
     }
 
     public void Generate()

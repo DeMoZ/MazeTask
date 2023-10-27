@@ -16,13 +16,13 @@ public class PlayerController : IDisposable
     private GameObject _player;
     private Vector2Int _currentCell;
     private bool _isMoving;
-    private Sequence _seqience;
+    private Sequence _sequence;
 
-    public PlayerController(SwipeDetector swipeDetector, MazeSpawner mazeSpawner, GameContext gc, GameService gs)
+    public PlayerController(SwipeDetector swipeDetector, MazeSpawner mazeSpawner, GameConfig gc, GameService gs)
     {
         _swipeDetector = swipeDetector;
         _mazeSpawner = mazeSpawner;
-        _gameConfig = gc.GameConfig;
+        _gameConfig = gc;
         _onReachEnd = gs.OnReachEnd;
 
         _swipeDetector.OnSwipe += OnSwipe;
@@ -33,7 +33,7 @@ public class PlayerController : IDisposable
         _maze = maze;
         _currentCell = _gameConfig.StartPoint;
 
-        if (_player != null) GameObject.Destroy(_player);
+        if (_player != null) Object.Destroy(_player);
 
         var playerPosition = _mazeSpawner.GetInCellCoordinates(_currentCell);
         _player = Object.Instantiate(_gameConfig.PlayerPrefab, playerPosition, Quaternion.identity);
@@ -136,10 +136,10 @@ public class PlayerController : IDisposable
         // Debug.Log($"------------");
         // Debug.Log($"curXY[{_currentCell}], coord from { _mazeSpawner.GetInCellCoordinates(_currentCell)};");
         // Debug.Log($"nextXY[{nextX};{nextY}], coord to {toPos};");
-        _seqience.Kill();
-        _seqience = DOTween.Sequence();
-        _seqience.SetEase(Ease.InCubic);
-        _seqience.OnComplete(() =>
+        _sequence.Kill();
+        _sequence = DOTween.Sequence();
+        _sequence.SetEase(Ease.InCubic);
+        _sequence.OnComplete(() =>
         {
             _isMoving = false;
             _currentCell.x = nextX;
@@ -147,11 +147,11 @@ public class PlayerController : IDisposable
             if (isExit) _onReachEnd?.Execute();
         });
         
-        _seqience.Append(_player.transform.DOMove(toPos, steps * _gameConfig.BallSpeed));
+        _sequence.Append(_player.transform.DOMove(toPos, steps * _gameConfig.BallSpeed));
 
         var sign = Mathf.Sign(Random.Range(0, 2) - 1);
         var newRotation = _player.transform.rotation * Quaternion.Euler(0, 0, 150 * steps / 2 * sign);
-        _seqience.Join(_player.transform.DORotateQuaternion(newRotation, steps * _gameConfig.BallSpeed));
+        _sequence.Join(_player.transform.DORotateQuaternion(newRotation, steps * _gameConfig.BallSpeed));
     }
 
     private bool IsEnd(ref bool exit, int x, int y)
