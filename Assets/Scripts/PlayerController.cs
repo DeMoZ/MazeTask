@@ -1,6 +1,5 @@
 using System;
 using DG.Tweening;
-using UniRx;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
@@ -10,7 +9,7 @@ public class PlayerController : IDisposable
     private readonly SwipeDetector _swipeDetector;
     private readonly MazeSpawner _mazeSpawner;
     private readonly GameConfig _gameConfig;
-    private readonly ReactiveCommand _onReachEnd;
+    private readonly GameService _gameService;
 
     private Cell[,] _maze;
     private GameObject _player;
@@ -18,12 +17,12 @@ public class PlayerController : IDisposable
     private bool _isMoving;
     private Sequence _sequence;
 
-    public PlayerController(SwipeDetector swipeDetector, MazeSpawner mazeSpawner, GameConfig gc, GameService gs)
+    public PlayerController(SwipeDetector swipeDetector, MazeSpawner mazeSpawner, GameConfig gameConfig, GameService gameService)
     {
         _swipeDetector = swipeDetector;
         _mazeSpawner = mazeSpawner;
-        _gameConfig = gc;
-        _onReachEnd = gs.OnReachEnd;
+        _gameConfig = gameConfig;
+        _gameService = gameService;
 
         _swipeDetector.OnSwipe += OnSwipe;
     }
@@ -144,7 +143,7 @@ public class PlayerController : IDisposable
             _isMoving = false;
             _currentCell.x = nextX;
             _currentCell.y = nextY;
-            if (isExit) _onReachEnd?.Execute();
+            if (isExit) _gameService.OnReachEnd?.Invoke();
         });
         
         _sequence.Append(_player.transform.DOMove(toPos, steps * _gameConfig.BallSpeed));

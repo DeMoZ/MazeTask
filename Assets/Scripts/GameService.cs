@@ -1,6 +1,7 @@
-using UniRx;
+
+using System;
 
 public class GameService
 {
-    public ReactiveCommand OnReachEnd = new ReactiveCommand();
+    public Action OnReachEnd;
 }

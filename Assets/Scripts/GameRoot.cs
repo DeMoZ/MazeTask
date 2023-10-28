@@ -4,22 +4,24 @@ using UniRx;
 
 public class GameRoot : IDisposable
 {
-    private CompositeDisposable _disposables;
-    private MazeGenerator _maze;
-    private PlayerController _playerController;
-    private MazeSpawner _mazeSpawner;
+    private readonly CompositeDisposable _disposables;
+    private readonly MazeGenerator _maze;
+    private readonly PlayerController _playerController;
+    private readonly MazeSpawner _mazeSpawner;
     private readonly GameContext _ctx;
-
-
-    public GameRoot(GameService gs, GameContext ctx, MazeGenerator maze, MazeSpawner mazeSpawner, PlayerController playerController)
+    private readonly GameService _gs;
+    
+    public GameRoot(GameService gs, GameContext ctx, MazeGenerator maze, MazeSpawner mazeSpawner,
+        PlayerController playerController)
     {
+        _gs = gs;
         _ctx = ctx;
         _maze = maze;
         _mazeSpawner = mazeSpawner;
         _playerController = playerController;
         _disposables = new CompositeDisposable();
 
-        gs.OnReachEnd.Subscribe(_ => OnReachEnd()).AddTo(_disposables);
+        _gs.OnReachEnd += OnReachEnd;
         CreateObjects();
     }
 
@@ -44,6 +46,8 @@ public class GameRoot : IDisposable
 
     public void Dispose()
     {
+        _gs.OnReachEnd -= OnReachEnd;
+
         _disposables.Dispose();
     }
 }

@@ -10,6 +10,7 @@ public class GameInstaller : MonoInstaller
         
         // prefabs
         Container.Bind<SwipeDetector>().FromComponentInNewPrefabResource("SwipeDetector").AsSingle().NonLazy();
+        
         Container.Bind<GameRoot>().AsSingle().NonLazy();
 
         Container.Bind<GameService>().AsSingle();
